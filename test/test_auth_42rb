@@ -1,0 +1,33 @@
+require 'test/unit'
+require 'auth_42'
+
+class Auth42Test < Test::Unit::TestCase
+	include Auth42
+
+	def setup
+		@login = "YOUR_LOGIN"
+		@pwd = "YOUR PASSWORD"
+	end
+
+	def test_simple_auth
+		result = Auth42::SimpleAuth::authenticate(@login, @pwd )
+		assert result
+	end
+
+	def test_list_infos_anonymous
+		auth = Auth42::SimpleAuth.new
+		results = auth.search(filter: "uid=ba*")
+		assert !results.empty?
+		assert !results.first.nil?
+		assert !results.first["picture"].nil?
+	end
+
+	def test_list_infos_user
+		auth = Auth42::SimpleAuth.new
+		results = auth.search(query: ["uid","last-name"],
+		                      filter: "uid=aaubin",
+		                      login: @login,
+		                      password: @pwd)
+		assert results
+	end
+end
